@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>灵感档案馆</title>
+<style>
+  :root {
+    --color-primary: #8b5cf6;
+    --color-secondary: #3b82f6;
+    --color-accent: #ec4899;
+    --color-bg: #fafbfc;
+    --color-surface: #ffffff;
+    --color-border: #e9ecf2;
+    --color-text-primary: #1a202c;
+    --color-text-secondary: #475569;
+    --color-text-tertiary: #94a3b8;
+    --blur: 14px;
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 10px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-bg: #0b0f1a;
+      --color-surface: rgba(30, 41, 59, 0.55);
+      --color-border: rgba(148, 163, 184, 0.16);
+      --color-text-primary: #f1f5f9;
+      --color-text-secondary: #cbd5e1;
+      --color-text-tertiary: #8b98ad;
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
+      "Segoe UI", "Microsoft YaHei", sans-serif;
+    background-color: var(--color-bg);
+    background-image:
+      radial-gradient(circle at 18% 22%, rgba(139, 92, 246, 0.16) 0%, transparent 48%),
+      radial-gradient(circle at 82% 30%, rgba(59, 130, 246, 0.14) 0%, transparent 50%),
+      radial-gradient(circle at 50% 92%, rgba(236, 72, 153, 0.12) 0%, transparent 52%);
+    background-attachment: fixed;
+    color: var(--color-text-primary);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+
+  /* 背景光斑 —— 营造景深 */
+  .glow {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(110px);
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .glow-1 { top: -120px; left: -80px; width: 460px; height: 460px; background: rgba(139, 92, 246, 0.5); }
+  .glow-2 { bottom: -160px; right: -100px; width: 520px; height: 520px; background: rgba(59, 130, 246, 0.4); }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 72px 28px 96px;
+  }
+
+  /* ---------- 头部 ---------- */
+  header { margin-bottom: 44px; animation: smoothEntry 0.7s ease-out; }
+
+  .eyebrow {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 14px;
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.1rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(120deg, var(--color-text-primary), var(--color-primary) 60%, var(--color-secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+  }
+  .subtitle { font-size: 1.05rem; color: var(--color-text-secondary); font-weight: 400; }
+
+  /* ---------- 筛选条 ---------- */
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 40px 0 8px;
+    position: sticky;
+    top: 16px;
+    z-index: 5;
+    animation: smoothEntry 0.8s ease-out;
+  }
+  .filter-btn {
+    border: 0.5px solid var(--color-border);
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    color: var(--color-text-secondary);
+    padding: 9px 18px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  }
+  @media (prefers-color-scheme: dark) {
+    .filter-btn { background: rgba(30, 41, 59, 0.5); }
+  }
+  .filter-btn:hover { transform: translateY(-2px); color: var(--color-text-primary); }
+  .filter-btn.active {
+    background: linear-gradient(120deg, var(--color-primary), var(--color-secondary));
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35);
+  }
+
+  /* ---------- 类别区块 ---------- */
+  .section { margin-top: 56px; }
+  .section-head { margin-bottom: 22px; }
+  .section-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-title::before {
+    content: "";
+    width: 6px; height: 22px;
+    border-radius: 3px;
+    background: linear-gradient(180deg, var(--color-primary), var(--color-secondary));
+  }
+  .section-desc { color: var(--color-text-tertiary); font-size: 0.92rem; margin-top: 6px; margin-left: 18px; }
+  .count { color: var(--color-text-tertiary); font-size: 0.85rem; font-weight: 500; }
+
+  /* ---------- 卡片网格 ---------- */
+  .grid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) { .grid { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1000px) { .grid { grid-template-columns: 1fr 1fr 1fr; } }
+
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    border: 0.5px solid var(--color-border);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.07);
+    transition: transform 0.4s cubic-bezier(0.34, 1.4, 0.64, 1), box-shadow 0.4s ease;
+    animation: cardIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  }
+  @media (prefers-color-scheme: dark) {
+    .card { background: rgba(30, 41, 59, 0.5); }
+  }
+  .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 44px rgba(139, 92, 246, 0.22);
+  }
+
+  .thumb {
+    aspect-ratio: 16 / 10;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .thumb-fallback {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.4rem; font-weight: 800; color: rgba(255,255,255,0.85);
+    letter-spacing: -0.02em;
+  }
+  /* 悬停流光 */
+  .thumb::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.25) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.7s ease;
+  }
+  .card:hover .thumb::after { transform: translateX(100%); }
+
+  .card-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .card-title { font-size: 1.02rem; font-weight: 700; letter-spacing: -0.01em; }
+  .card-desc { font-size: 0.86rem; color: var(--color-text-secondary); line-height: 1.5; }
+  .card-url { font-size: 0.78rem; color: var(--color-text-tertiary); margin-top: auto; display: flex; align-items: center; gap: 5px; }
+  .card-url::before { content: "↗"; }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+  .tag {
+    font-size: 0.7rem; font-weight: 600;
+    padding: 3px 9px; border-radius: 999px;
+    background: rgba(139, 92, 246, 0.1);
+    color: var(--color-primary);
+  }
+
+  /* ---------- 页脚 ---------- */
+  footer {
+    margin-top: 80px; text-align: center;
+    color: var(--color-text-tertiary); font-size: 0.82rem;
+  }
+
+  /* ---------- 动效 ---------- */
+  @keyframes smoothEntry { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(24px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+
+  <div class="wrap">
+    <header>
+      <span class="eyebrow" id="eyebrow">Curated Gallery</span>
+      <h1 id="site-title">灵感档案馆</h1>
+      <p class="subtitle" id="site-subtitle"></p>
+    </header>
+
+    <div class="filters" id="filters"></div>
+
+    <main id="content"></main>
+
+    <footer id="footer"></footer>
+  </div>
+
+  <script src="data.js"></script>
+  <script>
+    // 渐变占位色板（无封面图时使用）
+    const GRADIENTS = [
+      "linear-gradient(135deg, #8b5cf6, #3b82f6)",
+      "linear-gradient(135deg, #ec4899, #8b5cf6)",
+      "linear-gradient(135deg, #3b82f6, #06b6d4)",
+      "linear-gradient(135deg, #f59e0b, #ec4899)",
+      "linear-gradient(135deg, #10b981, #3b82f6)",
+      "linear-gradient(135deg, #6366f1, #ec4899)",
+    ];
+    let gi = 0;
+    const nextGradient = () => GRADIENTS[gi++ % GRADIENTS.length];
+
+    function esc(s = "") {
+      return String(s).replace(/[&<>"']/g, c =>
+        ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+
+    function cardHTML(item, delay) {
+      const hasImg = item.image && item.image.trim();
+      const grad = nextGradient();
+      const initial = esc((item.title || "?").trim().charAt(0));
+      const thumb = hasImg
+        ? `<div class="thumb" style="background-image:url('${esc(item.image)}')"></div>`
+        : `<div class="thumb" style="background:${grad}"><div class="thumb-fallback">${initial}</div></div>`;
+      const desc = item.desc ? `<p class="card-desc">${esc(item.desc)}</p>` : "";
+      const tags = (item.tags && item.tags.length)
+        ? `<div class="tags">${item.tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : "";
+      let host = "";
+      try { host = new URL(item.url).host; } catch (e) { host = item.url || ""; }
+      return `
+        <a class="card" href="${esc(item.url)}" target="_blank" rel="noopener" style="animation-delay:${delay}s">
+          ${thumb}
+          <div class="card-body">
+            <div class="card-title">${esc(item.title)}</div>
+            ${desc}
+            ${tags}
+            <div class="card-url">${esc(host)}</div>
+          </div>
+        </a>`;
+    }
+
+    function render(activeCat = "全部") {
+      const content = document.getElementById("content");
+      content.innerHTML = "";
+      let d = 0;
+      collections.forEach(col => {
+        if (activeCat !== "全部" && col.category !== activeCat) return;
+        const section = document.createElement("section");
+        section.className = "section";
+        const items = col.items.map(it => cardHTML(it, (d++ % 6) * 0.06)).join("");
+        section.innerHTML = `
+          <div class="section-head">
+            <div class="section-title">${esc(col.category)}
+              <span class="count">${col.items.length} 项</span></div>
+            ${col.desc ? `<p class="section-desc">${esc(col.desc)}</p>` : ""}
+          </div>
+          <div class="grid">${items}</div>`;
+        content.appendChild(section);
+      });
+    }
+
+    function buildFilters() {
+      const bar = document.getElementById("filters");
+      const cats = ["全部", ...collections.map(c => c.category)];
+      cats.forEach((cat, i) => {
+        const btn = document.createElement("button");
+        btn.className = "filter-btn" + (i === 0 ? " active" : "");
+        btn.textContent = cat;
+        btn.onclick = () => {
+          document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          gi = 0;
+          render(cat);
+        };
+        bar.appendChild(btn);
+      });
+    }
+
+    // 初始化
+    document.getElementById("site-title").textContent = SITE.title;
+    document.getElementById("site-subtitle").textContent = SITE.subtitle;
+    document.title = SITE.title;
+    const total = collections.reduce((n, c) => n + c.items.length, 0);
+    document.getElementById("footer").textContent =
+      `共 ${collections.length} 个类别 · ${total} 件收藏 · by ${SITE.author}`;
+    buildFilters();
+    render();
+  </script>
+</body>
+</html>
