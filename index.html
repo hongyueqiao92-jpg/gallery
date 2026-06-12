@@ -6,20 +6,19 @@
 <title>灵感档案馆</title>
 <style>
   :root {
-    /* 高级暗色基调 —— 低饱和、深而不黑、克制点缀 */
-    --color-primary: #818cf8;      /* 内敛靛蓝（替代鲜紫）*/
-    --color-secondary: #38bdf8;    /* 低调青蓝 */
-    --color-accent: #f472b6;       /* 柔和点缀粉，仅极少量使用 */
-    --color-bg: #0a0e17;           /* 深空蓝黑，带一丝蓝调，不死黑 */
-    --color-surface: rgba(22, 28, 41, 0.6);  /* 半透明深色玻璃 */
-    --color-border: rgba(148, 163, 184, 0.14);
-    --color-text-primary: #e8edf5;
-    --color-text-secondary: #9aa6bd;
-    --color-text-tertiary: #5f6b82;
-    --blur: 16px;
-    --radius-lg: 22px;
+    --color-primary: #ff007f;      /* 高亮品红 */
+    --color-secondary: #0022ff;    /* 亮蓝紫 */
+    --color-accent: #8b5cf6;
+    --color-bg: #ffffff;           /* 纯白底色 */
+    --color-surface: rgba(255, 255, 255, 0.7);  /* 高透玻璃 */
+    --color-border: rgba(0, 0, 0, 0.04);
+    --color-text-primary: #000000; /* 纯黑核心文字 */
+    --color-text-secondary: #555555;
+    --color-text-tertiary: #999999;
+    --blur: 24px;
+    --radius-lg: 24px;
     --radius-md: 16px;
-    --radius-sm: 10px;
+    --radius-sm: 8px;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,28 +29,43 @@
     font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
       "Segoe UI", "Microsoft YaHei", sans-serif;
     background-color: var(--color-bg);
-    background-image:
-      radial-gradient(circle at 18% 18%, rgba(99, 102, 241, 0.10) 0%, transparent 55%),
-      radial-gradient(circle at 84% 28%, rgba(56, 189, 248, 0.08) 0%, transparent 58%),
-      radial-gradient(circle at 50% 96%, rgba(244, 114, 182, 0.05) 0%, transparent 60%);
-    background-attachment: fixed;
     color: var(--color-text-primary);
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     line-height: 1.6;
+    overflow-x: hidden;
   }
 
-  /* 背景光斑 —— 营造景深 */
+  /* 中心化极简流体光斑 */
   .glow {
     position: fixed;
     border-radius: 50%;
-    filter: blur(140px);
-    opacity: 0.22;
+    /* 增强兼容性并确保模糊效果 */
+    -webkit-filter: blur(120px);
+    filter: blur(120px);
     pointer-events: none;
-    z-index: 0;
+    z-index: -1; /* 强制置于所有内容之下 */
+    opacity: 0.4; /* 降低透明度，防止滤镜失效时完全遮挡 */
+    will-change: transform, filter;
   }
-  .glow-1 { top: -160px; left: -120px; width: 520px; height: 520px; background: rgba(99, 102, 241, 0.45); }
-  .glow-2 { bottom: -200px; right: -140px; width: 560px; height: 560px; background: rgba(56, 189, 248, 0.32); }
+  .glow-1 { 
+    top: 20%; left: 30%; 
+    width: 400px; height: 400px; 
+    background: #ff007f; 
+    animation: float1 15s ease-in-out infinite alternate;
+  }
+  .glow-2 { 
+    top: 30%; right: 25%; 
+    width: 450px; height: 450px; 
+    background: #0022ff; 
+    animation: float2 18s ease-in-out infinite alternate;
+  }
+  .glow-3 {
+    top: 45%; left: 40%;
+    width: 350px; height: 350px;
+    background: #8b5cf6;
+    animation: float3 20s ease-in-out infinite alternate;
+  }
 
   .wrap {
     position: relative;
@@ -66,24 +80,24 @@
 
   .eyebrow {
     display: inline-block;
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.18em;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: var(--color-primary);
-    margin-bottom: 14px;
+    color: var(--color-text-secondary);
+    margin-bottom: 16px;
   }
   h1 {
-    font-size: clamp(2rem, 5vw, 3.1rem);
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    background: linear-gradient(120deg, var(--color-text-primary), var(--color-primary) 60%, var(--color-secondary));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    color: var(--color-text-primary);
     margin-bottom: 12px;
   }
-  .subtitle { font-size: 1.05rem; color: var(--color-text-secondary); font-weight: 400; }
+  h1 strong {
+    font-weight: 800;
+  }
+  .subtitle { font-size: 1.1rem; color: var(--color-text-secondary); font-weight: 300; letter-spacing: 0.02em; }
 
   /* ---------- 筛选条 ---------- */
   .filters {
@@ -92,30 +106,52 @@
     gap: 10px;
     margin: 40px 0 8px;
     position: sticky;
-    top: 16px;
-    z-index: 5;
+    top: 0;
+    z-index: 100;
+    padding: 16px 0; /* 移除左右 padding，由伪元素处理背景 */
+    transition: all 0.3s ease;
     animation: smoothEntry 0.8s ease-out;
   }
-  .filter-btn {
-    border: 0.5px solid var(--color-border);
-    background: var(--color-surface);
-    backdrop-filter: blur(var(--blur));
-    -webkit-backdrop-filter: blur(var(--blur));
-    color: var(--color-text-secondary);
-    padding: 9px 18px;
-    border-radius: 999px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+  /* 全屏宽度的伪元素背景 */
+  .filters::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    height: 100%;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom: 1px solid transparent;
+    z-index: -1;
+    transition: all 0.3s ease;
+    pointer-events: none;
   }
-  .filter-btn:hover { transform: translateY(-2px); color: var(--color-text-primary); border-color: rgba(148,163,184,0.3); }
+  .filters.is-sticky::before {
+    background: rgba(255, 255, 255, 0.6); /* 60% 透明度 */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: none;
+  }
+  .filter-btn {
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--color-text-tertiary);
+    padding: 8px 20px;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .filter-btn:hover { color: var(--color-text-primary); }
   .filter-btn.active {
-    background: linear-gradient(120deg, var(--color-primary), var(--color-secondary));
-    color: #0a0e17;
-    border-color: transparent;
-    box-shadow: 0 6px 22px rgba(99, 102, 241, 0.4);
+    color: var(--color-text-primary);
+    border-color: var(--color-text-primary);
+    font-weight: 600;
   }
 
   /* ---------- 类别区块 ---------- */
@@ -140,37 +176,45 @@
 
   /* ---------- 卡片网格 ---------- */
   .grid {
-    display: grid;
-    gap: 20px;
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
-  @media (min-width: 640px) { .grid { grid-template-columns: 1fr 1fr; } }
-  @media (min-width: 1000px) { .grid { grid-template-columns: 1fr 1fr 1fr; } }
 
   .card {
     position: relative;
     display: flex;
-    flex-direction: column;
-    border-radius: var(--radius-lg);
+    flex-direction: row; /* 横向排列 */
+    align-items: center;
+    border-radius: var(--radius-md);
     overflow: hidden;
     text-decoration: none;
     color: inherit;
-    border: 0.5px solid var(--color-border);
-    background: var(--color-surface);
-    backdrop-filter: blur(var(--blur));
-    -webkit-backdrop-filter: blur(var(--blur));
-    box-shadow: 0 10px 36px rgba(0, 0, 0, 0.4);
-    transition: transform 0.4s cubic-bezier(0.34, 1.4, 0.64, 1), box-shadow 0.4s ease, border-color 0.4s ease;
-    animation: cardIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(32px) saturate(120%);
+    -webkit-backdrop-filter: blur(32px) saturate(120%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 
+      0 4px 12px rgba(0, 0, 0, 0.02), 
+      inset 0 1px 1px rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+    animation: cardIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    padding: 12px;
+    gap: 16px;
   }
   .card:hover {
-    transform: translateY(-8px);
-    border-color: rgba(129, 140, 248, 0.35);
-    box-shadow: 0 22px 48px rgba(99, 102, 241, 0.25);
+    transform: translateX(4px);
+    background: rgba(255, 255, 255, 0.45);
+    box-shadow: 
+      0 8px 20px rgba(0, 0, 0, 0.05), 
+      inset 0 1px 1px rgba(255, 255, 255, 0.9);
   }
 
   .thumb {
-    aspect-ratio: 16 / 10;
+    width: 80px;
+    height: 50px;
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
     background-size: cover;
     background-position: center;
     position: relative;
@@ -179,24 +223,63 @@
   .thumb-fallback {
     width: 100%; height: 100%;
     display: flex; align-items: center; justify-content: center;
-    font-size: 2.4rem; font-weight: 800; color: rgba(255,255,255,0.85);
-    letter-spacing: -0.02em;
+    font-size: 1.2rem; font-weight: 800; color: rgba(255,255,255,0.85);
   }
-  /* 悬停流光 */
-  .thumb::after {
-    content: "";
-    position: absolute; inset: 0;
-    background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.25) 50%, transparent 70%);
-    transform: translateX(-100%);
-    transition: transform 0.7s ease;
-  }
-  .card:hover .thumb::after { transform: translateX(100%); }
 
-  .card-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
-  .card-title { font-size: 1.02rem; font-weight: 700; letter-spacing: -0.01em; }
-  .card-desc { font-size: 0.86rem; color: var(--color-text-secondary); line-height: 1.5; }
-  .card-url { font-size: 0.78rem; color: var(--color-text-tertiary); margin-top: auto; display: flex; align-items: center; gap: 5px; }
+  .card-body { 
+    padding: 0; 
+    display: flex; 
+    flex-direction: row; 
+    align-items: center;
+    gap: 16px; 
+    flex: 1;
+    overflow: hidden;
+  }
+  .card-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+  }
+  .card-title { 
+    font-size: 1rem; 
+    font-weight: 600; 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .card-desc { 
+    font-size: 0.82rem; 
+    color: var(--color-text-secondary); 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .card-url { 
+    font-size: 0.75rem; 
+    color: var(--color-text-tertiary); 
+    display: flex; 
+    align-items: center; 
+    gap: 4px;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
   .card-url::before { content: "↗"; }
+
+  .more-card {
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.15);
+    border-style: dashed;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  .more-card:hover {
+    background: rgba(255, 255, 255, 0.25);
+    color: var(--color-text-primary);
+  }
 
   .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
   .tag {
@@ -215,6 +298,9 @@
   /* ---------- 动效 ---------- */
   @keyframes smoothEntry { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes cardIn { from { opacity: 0; transform: translateY(24px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes float1 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(50px, 80px) scale(1.1); } }
+  @keyframes float2 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-60px, 50px) scale(1.15); } }
+  @keyframes float3 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-30px, -60px) scale(1.05); } }
 
   .hidden { display: none !important; }
 </style>
@@ -222,11 +308,12 @@
 <body>
   <div class="glow glow-1"></div>
   <div class="glow glow-2"></div>
+  <div class="glow glow-3"></div>
 
   <div class="wrap">
     <header>
       <span class="eyebrow" id="eyebrow">Curated Gallery</span>
-      <h1 id="site-title">灵感档案馆</h1>
+      <h1 id="site-title">灵感<strong>档案馆</strong></h1>
       <p class="subtitle" id="site-subtitle"></p>
     </header>
 
@@ -268,13 +355,16 @@
         ? `<div class="tags">${item.tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : "";
       let host = "";
       try { host = new URL(item.url).host; } catch (e) { host = item.url || ""; }
+      const detailUrl = `detail.html?title=${encodeURIComponent(item.title)}`;
       return `
-        <a class="card" href="${esc(item.url)}" target="_blank" rel="noopener" style="animation-delay:${delay}s">
+        <a class="card" href="${detailUrl}" style="animation-delay:${delay}s">
           ${thumb}
           <div class="card-body">
-            <div class="card-title">${esc(item.title)}</div>
-            ${desc}
-            ${tags}
+            <div class="card-info">
+              <div class="card-title">${esc(item.title)}</div>
+              ${desc}
+              ${tags}
+            </div>
             <div class="card-url">${esc(host)}</div>
           </div>
         </a>`;
@@ -286,17 +376,42 @@
       let d = 0;
       collections.forEach(col => {
         if (activeCat !== "全部" && col.category !== activeCat) return;
+        
         const section = document.createElement("section");
         section.className = "section";
-        const items = col.items.map(it => cardHTML(it, (d++ % 6) * 0.06)).join("");
+        
+        // 限制最多显示 5 条
+        const showAll = activeCat !== "全部";
+        const displayItems = showAll ? col.items : col.items.slice(0, 5);
+        const hasMore = !showAll && col.items.length > 5;
+        
+        let itemsHTML = displayItems.map(it => cardHTML(it, (d++ % 6) * 0.06)).join("");
+        
+        if (hasMore) {
+          itemsHTML += `
+            <a class="card more-card" href="javascript:void(0)" onclick="switchTab('${esc(col.category)}')" style="animation-delay:${(d++ % 6) * 0.06}s">
+              查看更多 (${col.items.length - 5}+)
+            </a>`;
+        }
+
         section.innerHTML = `
           <div class="section-head">
             <div class="section-title">${esc(col.category)}
               <span class="count">${col.items.length} 项</span></div>
             ${col.desc ? `<p class="section-desc">${esc(col.desc)}</p>` : ""}
           </div>
-          <div class="grid">${items}</div>`;
+          <div class="grid">${itemsHTML}</div>`;
         content.appendChild(section);
+      });
+    }
+
+    function switchTab(cat) {
+      const btns = document.querySelectorAll(".filter-btn");
+      btns.forEach(btn => {
+        if (btn.textContent === cat) {
+          btn.click();
+          window.scrollTo({ top: document.getElementById("filters").offsetTop - 20, behavior: 'smooth' });
+        }
       });
     }
 
@@ -326,6 +441,17 @@
       `共 ${collections.length} 个类别 · ${total} 件收藏 · by ${SITE.author}`;
     buildFilters();
     render();
+
+    // 监听滚动，处理 Tab 吸顶时的背景效果
+    const filtersBar = document.getElementById("filters");
+    const stickyThreshold = filtersBar.offsetTop;
+    window.addEventListener("scroll", () => {
+      if (window.pageYOffset > stickyThreshold) {
+        filtersBar.classList.add("is-sticky");
+      } else {
+        filtersBar.classList.remove("is-sticky");
+      }
+    });
   </script>
 </body>
 </html>
