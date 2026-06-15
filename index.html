@@ -13,8 +13,8 @@
     --color-surface: rgba(255, 255, 255, 0.7);  /* 高透玻璃 */
     --color-border: rgba(0, 0, 0, 0.04);
     --color-text-primary: #000000; /* 纯黑核心文字 */
-    --color-text-secondary: #555555;
-    --color-text-tertiary: #999999;
+    --color-text-secondary: #000000;
+    --color-text-tertiary: #686868;
     --blur: 24px;
     --radius-lg: 24px;
     --radius-md: 16px;
@@ -190,13 +190,11 @@
     overflow: hidden;
     text-decoration: none;
     color: inherit;
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.35);
     backdrop-filter: blur(32px) saturate(120%);
     -webkit-backdrop-filter: blur(32px) saturate(120%);
     border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 
-      0 4px 12px rgba(0, 0, 0, 0.02), 
-      inset 0 1px 1px rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
     transition: all 0.3s ease;
     animation: cardIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
     padding: 12px;
@@ -205,9 +203,7 @@
   .card:hover {
     transform: translateX(4px);
     background: rgba(255, 255, 255, 0.45);
-    box-shadow: 
-      0 8px 20px rgba(0, 0, 0, 0.05), 
-      inset 0 1px 1px rgba(255, 255, 255, 0.9);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
   }
 
   .thumb {
@@ -380,17 +376,19 @@
         const section = document.createElement("section");
         section.className = "section";
         
-        // 限制最多显示 5 条
+        // 空分类不渲染
+        if (col.items.length === 0) return;
+        // 限制最多显示 8 条
         const showAll = activeCat !== "全部";
-        const displayItems = showAll ? col.items : col.items.slice(0, 5);
-        const hasMore = !showAll && col.items.length > 5;
+        const displayItems = showAll ? col.items : col.items.slice(0, 8);
+        const hasMore = !showAll && col.items.length > 8;
         
         let itemsHTML = displayItems.map(it => cardHTML(it, (d++ % 6) * 0.06)).join("");
         
         if (hasMore) {
           itemsHTML += `
             <a class="card more-card" href="javascript:void(0)" onclick="switchTab('${esc(col.category)}')" style="animation-delay:${(d++ % 6) * 0.06}s">
-              查看更多 (${col.items.length - 5}+)
+              查看更多 (${col.items.length - 8}+)
             </a>`;
         }
 
@@ -417,7 +415,7 @@
 
     function buildFilters() {
       const bar = document.getElementById("filters");
-      const cats = ["全部", ...collections.map(c => c.category)];
+      const cats = collections.filter(c => c.items.length > 0).map(c => c.category);
       cats.forEach((cat, i) => {
         const btn = document.createElement("button");
         btn.className = "filter-btn" + (i === 0 ? " active" : "");
@@ -437,10 +435,11 @@
     document.getElementById("site-subtitle").textContent = SITE.subtitle;
     document.title = SITE.title;
     const total = collections.reduce((n, c) => n + c.items.length, 0);
-    document.getElementById("footer").textContent =
-      `共 ${collections.length} 个类别 · ${total} 件收藏 · by ${SITE.author}`;
+    document.getElementById("footer").textContent = "混沌不是迷路，是重塑新的自己";
     buildFilters();
-    render();
+    // 默认选中第一个非空分类
+    const firstCat = collections.find(c => c.items.length > 0);
+    if (firstCat) render(firstCat.category);
 
     // 监听滚动，处理 Tab 吸顶时的背景效果
     const filtersBar = document.getElementById("filters");
