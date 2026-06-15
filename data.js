@@ -174,7 +174,10 @@ const collections = [
         title: "Agent产品体验设计产出物",
         url: "#",
         desc: "Agent 产品体验设计各阶段核心产出物梳理",
-        content: "<p>内容预留：梳理 Agent 产品体验设计从需求到落地的核心产出物，包括各阶段交付件定义与规范。</p>",
+        content: `
+<p>相比传统交互设计师"从需求到界面"，Agent 体验设计师的产出物整体向<strong>上游</strong>和<strong>行为层</strong>迁移——设计对象不再是页面和组件，而是 Agent 的行为、表达，以及人机之间的信任关系。最终目的，是让用户能<strong>理解它、信任它、控制得住它</strong>。</p>
+<img src="三条核心设计线.png" alt="Agent 产品体验设计 · 三条核心设计线" style="width: 110%; margin-left: -5%; border-radius: 12px; margin-top: 24px; margin-bottom: 24px; display: block;" />
+`,
         image: "",
         tags: ["Agent", "体验设计", "产出物"],
       },
